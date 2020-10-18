@@ -1,6 +1,9 @@
 import argparse
+import math
 import random
-from typing import List
+from typing import List, Callable
+
+from matplotlib import pyplot as plt, animation
 
 
 def generate_target(sequence: str, size: int) -> List[int]:
@@ -22,8 +25,49 @@ def generate_target(sequence: str, size: int) -> List[int]:
     return target_
 
 
-def draw_charts(algorithms: List[str], interval: int):
+def get_visual_sorter(algorithm_name: str) -> Callable:
     pass
+
+
+def draw_charts(algorithms: List[str], target_set: List[int], interval: int) -> animation.FuncAnimation:
+    # Setup draw area
+    fig = plt.figure(1)
+    axs = []
+
+    square_side_float, square_side_int = math.modf(math.sqrt(len(algorithms)))
+    if square_side_float == 0:
+        rows, cols = square_side_int, square_side_int
+    elif square_side_float > 0.5:
+        rows, cols = square_side_int+1, square_side_int+1
+    else:
+        rows, cols = square_side_int+1, square_side_int
+    for i in range(len(algorithms)):
+        axs.append(fig.add_subplot(rows, cols, i+1))
+
+    # Get frames
+    target_set = list(map(int, target_set))
+    frames = []
+    if 'all' in algorithms:
+        algorithms = []
+    for algorithm in algorithms:
+        frames.append(get_visual_sorter(algorithm)(target_set))
+    # frames = [get_sorter(algorithm) for algorithm in algorithms]
+    frames = zip(frames)
+
+    def animate(frame):
+        # bars = []
+        for i, (array, info) in enumerate(frame):
+            axs[i].cla()
+            axs[i].set_titile(algorithms[i])
+            axs[i].set_xticks([])
+            axs[i].set_yticks([])
+            axs[i].bar(range(args.size), 
+                       array)
+        # return bars
+
+    # Animation
+    anim = animation.FuncAnimation(fig, animate, frames=frames, interval=interval)
+    return anim
 
 
 if __name__ == '__main__':
@@ -38,9 +82,11 @@ if __name__ == '__main__':
     parser.add_argument('--size', type=int, default=32)
     parser.add_argument('-o', '--outfile', default='result')
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('--interval', type=int)
-    group.add_argument('--fps', type=int)
+    group.add_argument('--interval', default=100, type=int)
+    group.add_argument('--fps', default=25, type=int)
     args = parser.parse_args()
+
     target = generate_target(args.target, args.size)
 
-    print(args)
+    if args.visualize:
+        draw_charts(args.algorithm, target, args.interval)
