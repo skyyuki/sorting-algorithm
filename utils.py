@@ -4,7 +4,7 @@ class ChartElement:
         self._v = v
 
     def __repr__(self):
-        return self._v
+        return repr(self._v)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
