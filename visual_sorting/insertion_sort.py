@@ -15,7 +15,7 @@ def insertion_sort(target: List[ChartElement]) -> List[Tuple[list, Dict[str, Uni
     for i in range(len(a)):
         info['time'] = start_time - time()
         frames.append((a, info))
-        frames[-1][i].color = 'r'
+        frames[-1][0][i].color = 'r'
         for j in range(i, 0, -1):
             info['comparisons'] += 1
             info['reads'] += 2
