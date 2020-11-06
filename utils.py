@@ -2,11 +2,17 @@
 class ChartElement:
     max: int = 32
 
-    def __init__(self, v: int):
+    def __init__(self, v: int, color=None):
         self._v = v
-        self.color = (0,
-                      0.5 - v / ChartElement.max / 2,
-                      v / ChartElement.max / 2)
+        if color is None:
+            self.color = (0,
+                          0.5 - v / ChartElement.max / 2,
+                          v / ChartElement.max / 2)
+        else:
+            self.color = color
+
+    def put_color(self, color):
+        return ChartElement(self._v, color)
 
     def __repr__(self):
         return repr(self._v)

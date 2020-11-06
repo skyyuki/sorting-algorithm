@@ -30,4 +30,6 @@ def choices(array, size):
     choices(origin, 1000),
 ], ids=['sorted', 'reversed', 'shuffle01', 'shuffle02', 'shuffle03', 'choices01', 'choices02'])
 def test_sorting(sorter, target, expected):  # sorter is defined in conftest.py that generate parameter of test targets
-    assert sorter(target[:])[-1][0] == expected
+    result = sorter(target)[-1]
+    assert result[0] == expected
+    print(result[1])

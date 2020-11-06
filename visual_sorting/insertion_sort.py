@@ -1,4 +1,3 @@
-import copy
 from time import perf_counter as time
 from typing import Tuple, List, Dict, Union
 
@@ -15,8 +14,8 @@ def insertion_sort(target: List[ChartElement]) -> List[Tuple[list, Dict[str, Uni
     frames = [(target, info.copy())]
     for i in range(len(a)):
         info['time'] = time() - start_time
-        frames.append((copy.deepcopy(a), info.copy()))
-        frames[-1][0][i].color = 'r'
+        frames.append((a[:], info.copy()))
+        frames[-1][0][i] = a[i].put_color('r')
         for j in range(i, 0, -1):
             info['comparisons'] += 1
             info['reads'] += 2
@@ -24,7 +23,7 @@ def insertion_sort(target: List[ChartElement]) -> List[Tuple[list, Dict[str, Uni
                 a[j-1], a[j] = a[j], a[j-1]
                 info['write'] += 2
                 info['time'] = time() - start_time
-                frames.append((copy.deepcopy(a), info.copy()))
+                frames.append((a[:], info.copy()))
             else:
                 break
     info['time'] = time() - start_time
