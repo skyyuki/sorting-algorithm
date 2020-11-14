@@ -5,7 +5,8 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
-pytest-mock = "*"
+pytest-xdist = "*"
+pytest-parallel = "*"
 
 [packages]
 matplotlib = "*"
