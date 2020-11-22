@@ -1,9 +1,13 @@
 import argparse
+import importlib
 import math
 import random
+from itertools import zip_longest
 from typing import List, Callable
 
 from matplotlib import pyplot as plt, animation
+
+from utils import ChartElement
 
 
 def generate_target(sequence: str, size: int) -> List[int]:
@@ -26,48 +30,47 @@ def generate_target(sequence: str, size: int) -> List[int]:
 
 
 def get_visual_sorter(algorithm_name: str) -> Callable:
-    pass
+    algorithm_name = algorithm_name.lower()
+    module = importlib.import_module('visual_sorting.'+algorithm_name)
+    return getattr(module, algorithm_name)
 
 
 def draw_charts(algorithms: List[str], target_set: List[int], interval: int) -> animation.FuncAnimation:
-    # Setup draw area
     fig = plt.figure(1)
-    axs = []
 
-    square_side_float, square_side_int = math.modf(math.sqrt(len(algorithms)))
-    if square_side_float == 0:
-        rows, cols = square_side_int, square_side_int
-    elif square_side_float > 0.5:
-        rows, cols = square_side_int+1, square_side_int+1
+    # Make subplots square or rectangular to minimize wasted space
+    square_side = math.sqrt(len(algorithms))
+    if square_side.is_integer():
+        rows, cols = int(square_side), int(square_side)
     else:
-        rows, cols = square_side_int+1, square_side_int
-    for i in range(len(algorithms)):
-        axs.append(fig.add_subplot(rows, cols, i+1))
+        rows, cols = round(square_side), int(square_side)+1
+    axs = [fig.add_subplot(rows, cols, i + 1) for i in range(len(algorithms))]
 
-    # Get frames
-    target_set = list(map(int, target_set))
-    frames = []
+    # Run sorts to get frames
+    target_set = list(map(ChartElement, target_set))
     if 'all' in algorithms:
         algorithms = []
-    for algorithm in algorithms:
-        frames.append(get_visual_sorter(algorithm)(target_set))
-    # frames = [get_sorter(algorithm) for algorithm in algorithms]
-    frames = zip(frames)
+        # TODO: case of 'all'
+    frames = zip_longest(*[get_visual_sorter(algorithm)(target_set) for algorithm in algorithms])
 
     def animate(frame):
         # bars = []
         for i, (array, info) in enumerate(frame):
             axs[i].cla()
-            axs[i].set_titile(algorithms[i])
+            axs[i].set_title(algorithms[i])
             axs[i].set_xticks([])
             axs[i].set_yticks([])
-            axs[i].bar(range(args.size), 
-                       array)
+            axs[i].bar(range(ChartElement.max),  # x
+                       [int(v) for v in array],  # y
+                       1,  # width
+                       color=[d.color for d in array])  # color
+            axs[i].text(0, ChartElement.max,  # position
+                        '\n'.join((f'{key}: {info[key]}' for key in info)),  # text
+                        va='top',  # vertical alignment
+                        bbox={'fc': "none"})  # box
         # return bars
 
-    # Animation
-    anim = animation.FuncAnimation(fig, animate, frames=frames, interval=interval)
-    return anim
+    return animation.FuncAnimation(fig, animate, frames=frames, interval=interval)
 
 
 if __name__ == '__main__':
@@ -89,4 +92,11 @@ if __name__ == '__main__':
     target = generate_target(args.target, args.size)
 
     if args.visualize:
-        draw_charts(args.algorithm, target, args.interval)
+        ChartElement.max = args.size
+        anim = draw_charts(args.algorithm, target, args.interval)
+        if args.visualize == 'play':
+            plt.show()
+        elif args.visualize == 'mp4':
+            anim.save(args.outfile+'.mp4', animation.FFMpegWriter(args.fps, codec="libx264"))
+        elif args.visualize == 'html':
+            anim.save(args.outfile+'.html', animation.HTMLWriter(args.fps))

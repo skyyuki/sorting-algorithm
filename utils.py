@@ -17,6 +17,9 @@ class ChartElement:
     def __repr__(self):
         return repr(self._v)
 
+    def __int__(self):
+        return int(self._v)
+
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self._v == other._v
