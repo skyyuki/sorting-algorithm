@@ -51,7 +51,7 @@ def draw_charts(algorithms: List[str], target_set: List[int], interval: int) -> 
     if 'all' in algorithms:
         algorithms = []
         # TODO: case of 'all'
-    frames = zip_longest(*[get_visual_sorter(algorithm)(target_set) for algorithm in algorithms])
+    frames = tuple(zip_longest(*[get_visual_sorter(algorithm)(target_set) for algorithm in algorithms]))
 
     def animate(frame):
         # bars = []
@@ -97,6 +97,8 @@ if __name__ == '__main__':
         if args.visualize == 'play':
             plt.show()
         elif args.visualize == 'mp4':
-            anim.save(args.outfile+'.mp4', animation.FFMpegWriter(args.fps, codec="libx264"))
+            anim.save(args.outfile+'.mp4', animation.FFMpegWriter(
+                args.fps, extra_args=['-vcodec', 'libx264', '-tune',
+                                      'stillimage']))
         elif args.visualize == 'html':
             anim.save(args.outfile+'.html', animation.HTMLWriter(args.fps))
