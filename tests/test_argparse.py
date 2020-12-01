@@ -15,12 +15,13 @@ def argparsing(argument: tuple) -> argparse.Namespace:
     group.add_argument('-p', '--performance')
     parser.add_argument('-a', '--algorithm', nargs='*', default='all')
     parser.add_argument('--target', default='random', choices=(
-        'random', 'sorted', 'reversed', 'almost-sorted', 'sorted-roughly', 'few-unique'))
+        'random', 'sorted', 'reversed', 'almost-sorted', 'sorted-roughly',
+        'few-unique'))
     parser.add_argument('--size', type=int, default=32)
     parser.add_argument('-o', '--outfile', default='result')
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('--interval', type=int)
-    group.add_argument('--fps', type=int)
+    group.add_argument('--interval', default=100, type=int)
+    group.add_argument('--fps', default=25, type=int)
     args = parser.parse_args(argument)
     return args
 
@@ -29,7 +30,7 @@ def argparsing(argument: tuple) -> argparse.Namespace:
     (('--visualize', 'play'), (('visualize', 'play'),)),
     (('--visualize', 'mp4'), (('visualize', 'mp4'),)),
     (('--visualize', 'html'), (('visualize', 'html'),)),
-    (('-v', 'play'), (('visualize', 'play'),)),
+    (('-v', 'play'), (('visualize', 'play'), ('algorithm', 'all'), ('target', 'random'), ('size', 32), ('outfile', 'result'), ('interval', 100), ('fps', 25))),
     (('--visualize', 'play', '--algorithm', 'all'), (('visualize', 'play'), ('algorithm', ['all']))),
     (('--visualize', 'play', '--algorithm', 'Shellsort'), (('visualize', 'play'), ('algorithm', ['Shellsort']))),
     (('--visualize', 'play', '--algorithm', 'Bubble_sort'), (('visualize', 'play'), ('algorithm', ['Bubble_sort']))),
@@ -37,7 +38,6 @@ def argparsing(argument: tuple) -> argparse.Namespace:
     (('--visualize', 'play', '--algorithm', 'Bubble_sort', 'Insertion_sort'), (('visualize', 'play'), ('algorithm', ['Bubble_sort', 'Insertion_sort']))),
     (('--visualize', 'play', '--algorithm', 'Bubble_sort;optimized', 'Insertion_sort', 'Merge_sort'), (('visualize', 'play'), ('algorithm', ['Bubble_sort;optimized', 'Insertion_sort', 'Merge_sort']))),
     (('-v', 'play', '-a', 'myalgorithm'), (('visualize', 'play'), ('algorithm', ['myalgorithm']))),
-    (('--visualize', 'play', '--algorithm', 'foo'), (('visualize', 'play'), ('algorithm', ['foo']))),
     (('--visualize', 'play', '--algorithm', 'foo'), (('visualize', 'play'), ('algorithm', ['foo']))),
     (('--visualize', 'play', '--algorithm', 'foo', '--target', 'random'), (('visualize', 'play'), ('algorithm', ['foo']), ('target', 'random'))),
     (('--visualize', 'play', '--algorithm', 'foo', '--target', 'sorted'), (('visualize', 'play'), ('algorithm', ['foo']), ('target', 'sorted'))),

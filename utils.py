@@ -1,3 +1,5 @@
+from typing import TypedDict, List, Tuple
+
 
 class ChartElement:
     max: int = 32
@@ -47,3 +49,13 @@ class ChartElement:
 
     def __ge__(self, other):
         return not self.__lt__(other)
+
+
+class VisualSortInfoDict(TypedDict):
+    time: float
+    comparisons: int
+    reads: int
+    write: int
+
+
+VisualSortReturn = List[Tuple[List[ChartElement], VisualSortInfoDict]]

@@ -35,7 +35,8 @@ def get_visual_sorter(algorithm_name: str) -> Callable:
     return getattr(module, algorithm_name)
 
 
-def draw_charts(algorithms: List[str], target_set: List[int], interval: int) -> animation.FuncAnimation:
+def draw_charts(algorithms: List[str], target_set: List[int],
+                interval: int) -> animation.FuncAnimation:
     fig = plt.figure(1)
 
     # Make subplots square or rectangular to minimize wasted space
@@ -51,7 +52,8 @@ def draw_charts(algorithms: List[str], target_set: List[int], interval: int) -> 
     if 'all' in algorithms:
         algorithms = []
         # TODO: case of 'all'
-    frames = tuple(zip_longest(*[get_visual_sorter(algorithm)(target_set) for algorithm in algorithms]))
+    frames = tuple(zip_longest(*[get_visual_sorter(algorithm)(target_set)
+                                 for algorithm in algorithms]))
 
     def animate(frame):
         # bars = []
@@ -65,12 +67,14 @@ def draw_charts(algorithms: List[str], target_set: List[int], interval: int) -> 
                        1,  # width
                        color=[d.color for d in array])  # color
             axs[i].text(0, ChartElement.max,  # position
-                        '\n'.join((f'{key}: {info[key]}' for key in info)),  # text
+                        '\n'.join((f'{key}: {round(info[key], 10)}'
+                                   for key in info)),  # text
                         va='top',  # vertical alignment
                         bbox={'fc': "none"})  # box
         # return bars
 
-    return animation.FuncAnimation(fig, animate, frames=frames, interval=interval)
+    return animation.FuncAnimation(fig, animate, frames=frames,
+                                   interval=interval)
 
 
 if __name__ == '__main__':
@@ -81,7 +85,8 @@ if __name__ == '__main__':
     group.add_argument('-p', '--performance')
     parser.add_argument('-a', '--algorithm', nargs='*', default='all')
     parser.add_argument('--target', default='random', choices=(
-        'random', 'sorted', 'reversed', 'almost-sorted', 'sorted-roughly', 'few-unique'))
+        'random', 'sorted', 'reversed', 'almost-sorted', 'sorted-roughly',
+        'few-unique'))
     parser.add_argument('--size', type=int, default=32)
     parser.add_argument('-o', '--outfile', default='result')
     group = parser.add_mutually_exclusive_group()

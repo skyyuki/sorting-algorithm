@@ -1,16 +1,16 @@
 from time import perf_counter as time
-from typing import Tuple, List, Dict, Union
+from typing import List
 
-from utils import ChartElement
+from utils import ChartElement, VisualSortReturn
 
 
-def insertion_sort(target: List[ChartElement]) -> List[Tuple[list, Dict[str, Union[float, int]]]]:
+def insertion_sort(target: List[ChartElement]) -> VisualSortReturn:
     a = target[:]
     start_time = time()
     info = {"time": 0.0,
             'comparisons': 0,
             'reads': 0,
-            'write': 0}
+            'writes': 0}
     frames = [(target, info.copy())]
     for i in range(len(a)):
         info['time'] = time() - start_time
@@ -21,7 +21,7 @@ def insertion_sort(target: List[ChartElement]) -> List[Tuple[list, Dict[str, Uni
             info['reads'] += 2
             if a[j] < a[j-1]:
                 a[j-1], a[j] = a[j], a[j-1]
-                info['write'] += 2
+                info['writes'] += 2
                 info['time'] = time() - start_time
                 frames.append((a[:], info.copy()))
             else:
